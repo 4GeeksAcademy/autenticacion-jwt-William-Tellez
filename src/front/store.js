@@ -1,6 +1,9 @@
 export const initialStore=()=>{
   return{
     message: null,
+    user: {
+      role: "user",
+    }, //Lo llenamos con el login
     todos: [
       {
         id: 1,

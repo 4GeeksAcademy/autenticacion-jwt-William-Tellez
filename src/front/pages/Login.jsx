@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const Register = () => {
+const Login = () => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const [user, setUser] = useState({
         email: '',
         password: '',
-        name: ''
     })
 
     const navigate = useNavigate()
@@ -21,7 +20,7 @@ const Register = () => {
 
     const handleUserSubmit = (event) => {
         event.preventDefault()
-        fetch(`${backendUrl}api/user`, {
+        fetch(`${backendUrl}api/user/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -30,12 +29,17 @@ const Register = () => {
         })
             .then(response => {
                 if (response.status === 200) {
-                    alert('Usuario creado exitosamente')
-                    navigate('/')
+                    alert('Bienvenido')
                 }
                 return response.json()
             })
-            .then(data => alert(data))
+            .then(data => {
+                console.log(data)
+                if(data.access_token){
+                    localStorage.setItem('token', data.access_token)
+                    navigate('/')
+                }
+            })
             .catch(error => console.log(error))
     }
 
@@ -49,19 +53,18 @@ const Register = () => {
                     <label htmlFor="floatingInput">Email address</label>
                 </div>
                 <div className="form-floating">
-                    <input onChange={handleChange} name='name' type="text" className="form-control" id="floatingInput" placeholder="Pedrito Perez" />
-                    <label htmlFor="floatingInput">Full name</label>
-                </div>
-                <div className="form-floating">
                     <input onChange={handleChange} name='password' type="password" className="form-control" id="floatingPassword" placeholder="Password" />
                     <label htmlFor="floatingPassword">Password</label> </div> <div className="form-check text-start my-3">
                     <input className="form-check-input" type="checkbox" value="remember-me" id="checkDefault" />
+                    <label className="form-check-label" htmlFor="checkDefault">
+                        Remember me
+                    </label>
                 </div>
-                <button className="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+                <button className="btn btn-primary w-100 py-2" type="submit">Lo in</button>
                 <p className="mt-5 mb-3 text-body-secondary">© 2017–2025</p>
             </form>
         </main>
     </>
 }
 
-export default Register
+export default Login

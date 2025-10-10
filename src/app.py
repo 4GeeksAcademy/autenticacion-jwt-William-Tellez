@@ -10,7 +10,7 @@ from api.models import db
 from api.routes import api, bcrypt
 from api.admin import setup_admin
 from api.commands import setup_commands
-from api.routes import bcrypt
+from flask_jwt_extended import JWTManager
 
 # from models import Person
 
@@ -20,6 +20,9 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 bcrypt.init_app(app)
+JWTManager(app)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -31,8 +34,6 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
 # add the admin
 setup_admin(app)
 
