@@ -13,43 +13,35 @@ bcrypt = Bcrypt()
 # Allow CORS requests to this API
 CORS(api)
 
-
-@api.route('/hello', methods=['POST', 'GET'])
-def handle_hello():
-
-    response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the google inspector and you will see the GET request"
-    }
-    return jsonify(response_body), 200
-
 @api.route('/user', methods=["POST"])
 def create_user():
     email = request.json.get('email')
-    if email is None:
-        return 'Email is required', 400
-    
-    user = User.query.filter_by(email=email).first()
-    if user is not None:
-            return 'User already exists', 400
-        
     password = request.json.get('password')
-    if password is None:
-        return 'Password is required', 400
-    elif len(password) > 8:
-        return 'Password should be max 8 characters long', 400
-    user = User()
-    user.name = request.json.get('name')
-    user.email = email
+    name = request.json.get('name')
+
+    if not email:
+        return jsonify({ "error": "Email is required" }), 400
+    if not password or len(password) < 8:
+        return jsonify({ "error": "Password must be at least 8 characters" }), 400
+    if not name:
+        return jsonify({ "error": "Name is required" }), 400
+
+    if User.query.filter_by(email=email).first():
+        return jsonify({ "error": "User already exists" }), 400
 
     #Encrypt password
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    user.password = hashed_password
-    user.is_active = True
+    user = User(
+        name=name, 
+        email=email, 
+        password=hashed_password, 
+        is_active=True,
+        role="user")
 
     db.session.add(user)
     db.session.commit()
 
-    return 'User created', 200
+    return jsonify({ "message": "User created" }), 200
 
 @api.route('/user/login', methods=['POST'])
 def login():
@@ -65,13 +57,11 @@ def login():
     if not bcrypt.check_password_hash(user.password, password):
         return 'Password invalid', 400
      
-    access_token = create_access_token(identity=email)
-    user.access_token = access_token
-    db.session.commit()
-    return jsonify({ "access_token": access_token, "user": user.serialize() }), 200
+    access_token = create_access_token(identity=email) # genra el token a partir del email
+    return jsonify({ "access_token": access_token, "user": user.serialize() }), 200 #con access_token devuelvo el token al frontend
 
 @api.route('/users')
-@jwt_required()
+@jwt_required() # protejes rutas quiere decir exigir el token
 def get_all_users():
     users = User.query.all()
     users = list(map(lambda user: user.serialize(), users))

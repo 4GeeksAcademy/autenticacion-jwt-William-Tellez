@@ -46,7 +46,6 @@ const Login = () => {
     return <>
         <main className="container form-signin w-100 m-auto">
             <form onSubmit={handleUserSubmit}>
-                <img className="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" />
                 <h1 className="h3 mb-3 fw-normal">Please add your register info</h1>
                 <div className="form-floating">
                     <input onChange={handleChange} name='email' type="email" className="form-control" id="floatingInput" placeholder="name@example.com" />
@@ -61,7 +60,6 @@ const Login = () => {
                     </label>
                 </div>
                 <button className="btn btn-primary w-100 py-2" type="submit">Lo in</button>
-                <p className="mt-5 mb-3 text-body-secondary">© 2017–2025</p>
             </form>
         </main>
     </>

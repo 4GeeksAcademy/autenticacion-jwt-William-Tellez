@@ -1,7 +1,7 @@
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { Navigate } from "react-router-dom"
 
-const PrivateRoute = ({ children, allweddRoles }) => {
+const PrivateRoute = ({ children, allowedRoles }) => {
     const NotAuthorized = () => <h1>Not authorized</h1>
     const { store: { user } } = useGlobalReducer()
 
