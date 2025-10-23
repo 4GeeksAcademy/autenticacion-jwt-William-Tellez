@@ -1,19 +1,18 @@
+import { Navigate, Outlet } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { Navigate } from "react-router-dom"
 
-const PrivateRoute = ({ children, allowedRoles }) => {
-    const NotAuthorized = () => <h1>Not authorized</h1>
-    const { store: { user } } = useGlobalReducer()
+const PrivateRoute = ({ allowedRoles }) => {
+  const { store: { user } } = useGlobalReducer();
 
-    if (!user){
-        return <Navigate to='/' replace />
-    }
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
-    if(!allowedRoles.includes(user.role)){
-        return <NotAuthorized />
-    }
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <h1>Not authorized</h1>;
+  }
 
-    return children
-}
+  return <Outlet />; // ✅ Renderiza la ruta hija protegida
+};
 
-export default PrivateRoute
+export default PrivateRoute;

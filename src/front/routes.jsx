@@ -3,12 +3,14 @@
 import {
   createBrowserRouter,
   createRoutesFromElements,
-  Route,
+  Route, Navigate
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
-import { Home } from "./pages/Home";
-import { Single } from "./pages/Single";
-import { Demo } from "./pages/Demo";
+import Home from './pages/Home';
+import CrearRutina from "./pages/CrearRutina";
+import DetalleRutina from "./pages/DetalleRutina";
+import VerRutina from "./pages/VerRutina";
+import Admin from "./pages/Admin";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import PrivateRoute from "./components/PrivateRoute";
@@ -23,16 +25,28 @@ export const router = createBrowserRouter(
 
     // Root Route: All navigation will start from here.
     <>
-      <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
+      {/* Rutas con Layout (Navbar + Footer) */}
+      <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
 
-        {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-        <Route path="/" element={<Home />} />
-        <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
-        <Route path="/demo" element={<PrivateRoute allowedRoles={['user']}>
-          <Demo />
-        </PrivateRoute>} />
+        {/* Rutas privadas para user y admin */}
+        <Route element={<PrivateRoute allowedRoles={['user', 'admin']} />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/detail" element={<DetalleRutina />} />
+          <Route path="/routine" element={<VerRutina />} />
+        </Route>
+
+        {/* Ruta solo para admin */}
+        <Route element={<PrivateRoute allowedRoles={['admin']} />}>
+          <Route path="/admin" element={<Admin />} />
+        </Route>
+
+        {/* Ruta solo para user */}
+        <Route element={<PrivateRoute allowedRoles={['user', 'admin']} />}>
+          <Route path="/create" element={<CrearRutina />} />
+        </Route>
       </Route>
 
+      {/* Rutas públicas */}
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
     </>

@@ -2,8 +2,18 @@ import { Link } from "react-router-dom";
 import letrasGymio from "../assets/img/letras-gymio.png";
 import logoGymio from "../assets/img/logo-gymio.png";
 import { FaCircleUser } from "react-icons/fa6";
+import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Navbar = () => {
+	const { dispatch, store } = useGlobalReducer();
+	const navigate = useNavigate();
+
+	const handleLogout = () => {
+		dispatch({ type: "logout" });        // Limpio el estado global
+		localStorage.clear();                // Limpio el token
+		navigate("/login");
+	};
 
 	return (
 		<nav className="navbar bg-white shadow-sm">
@@ -15,11 +25,21 @@ export const Navbar = () => {
 
 				<div className="d-flex gap-3 me-5">
 					<Link className="nav-link fw-semibold text-primary-emphasis" to="/">Home</Link>
-					<Link className="nav-link fw-semibold text-primary-emphasis" to="/rutinas">Rutinas</Link>
-					<Link className="nav-link fw-semibold text-primary-emphasis" to="/crear">Crear Rutina</Link>
-					<Link className="nav-link fw-semibold text-primary-emphasis" to="/rutina/1">Detalle Rutina</Link>
-					<Link className="nav-link fw-semibold text-primary-emphasis" to="/admin">Admin</Link>
-					<Link className="nav-link fw-semibold text-primary-emphasis"><FaCircleUser className="me-1 ms-4 fs-4" />Cerrar Sesión</Link>
+					<Link className="nav-link fw-semibold text-primary-emphasis" to="/routine">Rutinas</Link>
+					<Link className="nav-link fw-semibold text-primary-emphasis" to="/create">Crear Rutina</Link>
+					<Link className="nav-link fw-semibold text-primary-emphasis" to="/detail">Detalle Rutina</Link>
+					{store.user?.role === "admin" && (
+						<Link className="nav-link fw-semibold text-primary-emphasis" to="/admin">Admin</Link>
+					)}
+
+					<button
+						className="nav-link fw-semibold text-primary-emphasis bg-transparent border-0"
+						onClick={handleLogout}
+					>
+						<FaCircleUser className="me-1 ms-4 fs-4" />
+						Cerrar Sesión
+					</button>
+
 				</div>
 			</div>
 		</nav>
