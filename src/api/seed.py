@@ -26,7 +26,7 @@ with app.app_context():
     if existing:
         print("El superadmin ya existe:", existing.email)
     else:
-        hashed_pw = bcrypt.generate_password_hash("supersecurepassword").decode('utf-8')
+        hashed_pw = bcrypt.generate_password_hash("password").decode('utf-8')
         superadmin = User(
             name="Super Admin",
             email="admin@gymio.com",

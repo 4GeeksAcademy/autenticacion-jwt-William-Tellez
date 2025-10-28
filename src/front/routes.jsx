@@ -9,7 +9,7 @@ import { Layout } from "./pages/Layout";
 import Home from './pages/Home';
 import CrearRutina from "./pages/CrearRutina";
 import DetalleRutina from "./pages/DetalleRutina";
-import VerRutina from "./pages/VerRutina";
+import Exercises from "./pages/Exercises";
 import Admin from "./pages/Admin";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -29,19 +29,19 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>}>
 
         {/* Rutas privadas para user y admin */}
-        <Route element={<PrivateRoute allowedRoles={['user', 'admin']} />}>
+        <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'superadmin']} />}>
           <Route path="/" element={<Home />} />
           <Route path="/detail" element={<DetalleRutina />} />
-          <Route path="/routine" element={<VerRutina />} />
+          <Route path="/exercises" element={<Exercises />} />
         </Route>
 
         {/* Ruta solo para admin */}
-        <Route element={<PrivateRoute allowedRoles={['admin']} />}>
+        <Route element={<PrivateRoute allowedRoles={['admin', 'superadmin']} />}>
           <Route path="/admin" element={<Admin />} />
         </Route>
 
         {/* Ruta solo para user */}
-        <Route element={<PrivateRoute allowedRoles={['user', 'admin']} />}>
+        <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'superadmin']} />}>
           <Route path="/create" element={<CrearRutina />} />
         </Route>
       </Route>

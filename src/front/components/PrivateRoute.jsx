@@ -12,7 +12,7 @@ const PrivateRoute = ({ allowedRoles }) => {
     return <h1>Not authorized</h1>;
   }
 
-  return <Outlet />; // ✅ Renderiza la ruta hija protegida
+  return <Outlet />; // Renderiza la ruta hija protegida
 };
 
 export default PrivateRoute;
