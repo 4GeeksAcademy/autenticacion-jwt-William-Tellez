@@ -26,8 +26,6 @@ export const Navbar = () => {
 				<div className="d-flex gap-3 me-5">
 					<Link className="nav-link fw-semibold text-primary-emphasis" to="/">Home</Link>
 					<Link className="nav-link fw-semibold text-primary-emphasis" to="/exercises">Ejercicios</Link>
-					<Link className="nav-link fw-semibold text-primary-emphasis" to="/create">Crear Rutina</Link>
-					<Link className="nav-link fw-semibold text-primary-emphasis" to="/detail">Detalle Rutina</Link>
 					{(store.user?.role === "admin" || store.user?.role === "superadmin") && (
 						<Link className="nav-link fw-semibold text-primary-emphasis" to="/admin">Admin</Link>
 					)}

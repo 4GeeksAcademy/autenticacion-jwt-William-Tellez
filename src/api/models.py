@@ -12,7 +12,6 @@ class User(db.Model):
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
     role: Mapped[str] = mapped_column(nullable=False)
 
-
     def serialize(self):
         return {
             "id": self.id,
@@ -22,3 +21,5 @@ class User(db.Model):
             "role": self.role
             # do not serialize the password, its a security breach
         }
+
+   

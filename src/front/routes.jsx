@@ -7,8 +7,6 @@ import {
 } from "react-router-dom";
 import { Layout } from "./pages/Layout";
 import Home from './pages/Home';
-import CrearRutina from "./pages/CrearRutina";
-import DetalleRutina from "./pages/DetalleRutina";
 import Exercises from "./pages/Exercises";
 import Admin from "./pages/Admin";
 import Register from "./pages/Register";
@@ -31,18 +29,12 @@ export const router = createBrowserRouter(
         {/* Rutas privadas para user y admin */}
         <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'superadmin']} />}>
           <Route path="/" element={<Home />} />
-          <Route path="/detail" element={<DetalleRutina />} />
           <Route path="/exercises" element={<Exercises />} />
         </Route>
 
         {/* Ruta solo para admin */}
         <Route element={<PrivateRoute allowedRoles={['admin', 'superadmin']} />}>
           <Route path="/admin" element={<Admin />} />
-        </Route>
-
-        {/* Ruta solo para user */}
-        <Route element={<PrivateRoute allowedRoles={['user', 'admin', 'superadmin']} />}>
-          <Route path="/create" element={<CrearRutina />} />
         </Route>
       </Route>
 
