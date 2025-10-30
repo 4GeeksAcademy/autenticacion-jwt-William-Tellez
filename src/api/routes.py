@@ -10,6 +10,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 import os
 import requests
 from deep_translator import GoogleTranslator
+from functools import lru_cache
 from flask import Response
 
 BASE_URL = os.getenv("EXERCISEDB_BASE_URL")
@@ -128,6 +129,17 @@ def assign_role(user_id):
     return jsonify({}), 200
 
 # ENDPOINT RUTINAS DE EJERCICIOS
+
+# Función para guardar caché de la traducción
+def translate_cached(text, source="en", target="es"):
+    if text in translation_cache:
+        return translation_cache[text]
+    else:
+        translated = GoogleTranslator(
+            source=source, target=target).translate(text)
+        translation_cache[text] = translated
+        return translated
+
 @api.route('/exercise/image/<exercise_id>', methods=['GET'])
 def get_exercise_image(exercise_id):
     resolution = request.args.get("resolution", "180")
@@ -143,21 +155,17 @@ def get_exercise_image(exercise_id):
     except requests.exceptions.RequestException as e:
         return jsonify({"error": str(e)}), 500
 
-
-
 @api.route('/exercises', methods=['GET'])
 def get_exercises():
     body_part = request.args.get('bodyPart')
-    equipment = request.args.get('equipment')
-    # limito a solo 6 ejercicios para que no se demore el traductor
     limit = request.args.get('limit', default=6, type=int)
+    offset = request.args.get('offset', default=0, type=int)
+    print("Offset recibido:", offset)
 
-    if body_part:
-        url = f"{BASE_URL}/bodyPart/{body_part}"
-    elif equipment:
-        url = f"{BASE_URL}/equipment/{equipment}"
-    else:
-        url = BASE_URL
+    if not body_part:
+        return jsonify([])  # si no hay filtro, no devuelve nada
+    
+    url = f"{BASE_URL}/bodyPart/{body_part}?limit={limit}&offset={offset}"
 
     headers = {
         "x-rapidapi-key": RAPIDAPI_KEY,
@@ -167,28 +175,19 @@ def get_exercises():
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        exercises = response.json()[:limit]  # cierro el límite de 6 ejercicios
+        all_exercises = response.json()
 
-        # Traducir campos principales
-        translator = GoogleTranslator(source="en", target="es")
-
-        for ex in exercises:
-            texto = f"{ex['name']} - {ex['bodyPart']} - {ex['equipment']} - {ex.get('target', '')}"
+        # Traducción
+        for ex in all_exercises:
+            texto = f"{ex['name']} - {ex['bodyPart']} - {ex['equipment']}"
             traduccion = translate_cached(texto)
             partes = traduccion.split(" - ")
 
             ex["name"] = partes[0] if len(partes) > 0 else ex["name"]
             ex["bodyPart"] = partes[1] if len(partes) > 1 else ex["bodyPart"]
             ex["equipment"] = partes[2] if len(partes) > 2 else ex["equipment"]
-            if len(partes) > 3:
-                ex["target"] = partes[3]
 
-            if "instructions" in ex:
-                texto_instr = " | ".join(ex["instructions"])
-                traduccion_instr = translate_cached(texto_instr)
-                ex["instructions"] = traduccion_instr.split(" | ")
-
-        return jsonify(exercises)
+        return jsonify(all_exercises)
 
     except requests.exceptions.RequestException as e:
         print("ERROR AL CONSULTAR RAPIDAPI:", e)
